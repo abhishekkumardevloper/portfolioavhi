@@ -189,7 +189,7 @@ export default function HeroSection() {
           <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.35, ease: [0.23, 1, 0.32, 1] }}>
             <p style={{ fontSize: "clamp(14px, 2vw, 18px)", color: "rgba(255,255,255,0.6)", marginBottom: 6, letterSpacing: "0.05em", fontWeight: 500 }}>Hi, I&apos;m</p>
             <h1 style={{ fontFamily: "var(--font-space), sans-serif", fontSize: "clamp(48px, 12vw, 88px)", fontWeight: 800, lineHeight: 1.05, letterSpacing: "-0.03em" }}>
-              <span style={{ display: "block", color: "white", dropShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>Abhishek</span>
+             <span style={{ display: "block", color: "white", textShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>Abhishek</span>
               <span style={{ display: "block", background: "linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 60%, #06b6d4 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Kumar</span>
             </h1>
           </motion.div>
