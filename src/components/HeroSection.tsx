@@ -23,13 +23,17 @@ export default function HeroSection() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext("2d")!;
-    let w = (canvas.width = window.innerWidth);
-    let h = (canvas.height = window.innerHeight);
+    
+    // FIX: Use parent element dimensions so the canvas covers the whole scrollable area on mobile
+    let w = (canvas.width = canvas.parentElement.offsetWidth);
+    let h = (canvas.height = canvas.parentElement.offsetHeight);
+    
     const onResize = () => {
-      w = canvas.width = window.innerWidth;
-      h = canvas.height = window.innerHeight;
+      if (!canvas.parentElement) return;
+      w = canvas.width = canvas.parentElement.offsetWidth;
+      h = canvas.height = canvas.parentElement.offsetHeight;
     };
     window.addEventListener("resize", onResize);
 
@@ -47,12 +51,15 @@ export default function HeroSection() {
     const draw = () => {
       ctx.clearRect(0, 0, w, h);
       const mx = mouseRef.current.x, my = mouseRef.current.y;
+      
       const g1 = ctx.createRadialGradient(w * 0.25, h * 0.4, 0, w * 0.25, h * 0.4, 500);
       g1.addColorStop(0, "rgba(14,165,233,0.07)"); g1.addColorStop(1, "transparent");
       ctx.fillStyle = g1; ctx.fillRect(0, 0, w, h);
+      
       const g2 = ctx.createRadialGradient(w * 0.75, h * 0.5, 0, w * 0.75, h * 0.5, 400);
       g2.addColorStop(0, "rgba(139,92,246,0.07)"); g2.addColorStop(1, "transparent");
       ctx.fillStyle = g2; ctx.fillRect(0, 0, w, h);
+      
       const g3 = ctx.createRadialGradient(mx, my, 0, mx, my, 180);
       g3.addColorStop(0, "rgba(6,182,212,0.04)"); g3.addColorStop(1, "transparent");
       ctx.fillStyle = g3; ctx.fillRect(0, 0, w, h);
@@ -108,11 +115,11 @@ export default function HeroSection() {
   }, [roleIdx, typing]);
 
   return (
-    <section id="hero" style={{ minHeight: "100vh", width: "100%", position: "relative", overflow: "hidden", display: "flex", alignItems: "center" }}>
+    // FIX: Changed overflow: "hidden" to overflowX: "hidden" to allow mobile vertical scrolling
+    <section id="hero" style={{ minHeight: "100vh", width: "100%", position: "relative", overflowX: "hidden", display: "flex", alignItems: "center" }}>
       <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
       <div className="bg-grid" style={{ position: "absolute", inset: 0, opacity: 0.4 }} />
 
-      {/* Two-column layout */}
       <div
         className="hero-grid"
         style={{
@@ -121,10 +128,11 @@ export default function HeroSection() {
           maxWidth: 1280,
           width: "100%",
           margin: "0 auto",
-          padding: isMobile ? "90px 1.25rem 60px" : "110px 2.5rem 70px",
+          // FIX: Adjusted padding for better breathing room on mobile
+          padding: isMobile ? "60px 1.25rem 100px" : "110px 2.5rem 70px",
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-          gap: isMobile ? "36px" : "60px",
+          gap: isMobile ? "40px" : "60px",
           alignItems: "center",
           textAlign: isMobile ? "center" : "left",
         }}
@@ -132,7 +140,15 @@ export default function HeroSection() {
         {/* LEFT: Text */}
         <div
           className="hero-left"
-          style={{ display: "flex", flexDirection: "column", gap: 22, alignItems: isMobile ? "center" : "flex-start" }}
+          style={{ 
+            display: "flex", 
+            flexDirection: "column", 
+            gap: 22, 
+            alignItems: isMobile ? "center" : "flex-start",
+            // FIX: Forces the text to take up the first screen view on mobile, pushing image down
+            minHeight: isMobile ? "85vh" : "auto", 
+            justifyContent: "center" 
+          }}
         >
           {/* Badge */}
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2, ease: [0.23, 1, 0.32, 1] }}>
@@ -169,24 +185,24 @@ export default function HeroSection() {
           <motion.div
             className="hero-ctas"
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.85 }}
-            style={{ display: "flex", flexWrap: isMobile ? "nowrap" : "wrap", flexDirection: isMobile ? "column" : "row", gap: 12, marginTop: 4 }}
+            style={{ display: "flex", flexWrap: isMobile ? "nowrap" : "wrap", flexDirection: isMobile ? "column" : "row", gap: 12, marginTop: 4, width: isMobile ? "100%" : "auto" }}
           >
             <button
               onClick={() => document.querySelector("#projects")?.scrollIntoView({ behavior: "smooth" })}
-              style={{ padding: "13px 28px", background: "linear-gradient(135deg, #0ea5e9, #8b5cf6)", border: "none", borderRadius: 50, color: "white", fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.3s ease", boxShadow: "0 4px 24px rgba(14,165,233,0.4)", fontFamily: "var(--font-space), sans-serif" }}
+              style={{ width: isMobile ? "100%" : "auto", padding: "13px 28px", background: "linear-gradient(135deg, #0ea5e9, #8b5cf6)", border: "none", borderRadius: 50, color: "white", fontSize: 14, fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.3s ease", boxShadow: "0 4px 24px rgba(14,165,233,0.4)", fontFamily: "var(--font-space), sans-serif" }}
               onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 14px 40px rgba(14,165,233,0.55)"; }}
               onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(14,165,233,0.4)"; }}>
               🚀 Explore My Work
             </button>
             <a href="https://calendly.com" target="_blank" rel="noopener noreferrer"
-              style={{ padding: "13px 28px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 50, color: "rgba(255,255,255,0.88)", fontSize: 14, fontWeight: 600, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.3s ease", fontFamily: "var(--font-space), sans-serif", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
+              style={{ width: isMobile ? "100%" : "auto", padding: "13px 28px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 50, color: "rgba(255,255,255,0.88)", fontSize: 14, fontWeight: 600, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.3s ease", fontFamily: "var(--font-space), sans-serif", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6 }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(14,165,233,0.5)"; e.currentTarget.style.background = "rgba(14,165,233,0.08)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.transform = "none"; }}>
               📅 Book a Meeting
             </a>
             <button
               onClick={() => document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" })}
-              style={{ padding: "13px 28px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 50, color: "rgba(255,255,255,0.88)", fontSize: 14, fontWeight: 600, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.3s ease", fontFamily: "var(--font-space), sans-serif" }}
+              style={{ width: isMobile ? "100%" : "auto", padding: "13px 28px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 50, color: "rgba(255,255,255,0.88)", fontSize: 14, fontWeight: 600, cursor: "pointer", letterSpacing: "0.04em", transition: "all 0.3s ease", fontFamily: "var(--font-space), sans-serif" }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(139,92,246,0.5)"; e.currentTarget.style.background = "rgba(139,92,246,0.08)"; e.currentTarget.style.transform = "translateY(-3px)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.14)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.transform = "none"; }}>
               ✉️ Contact Me
@@ -214,96 +230,41 @@ export default function HeroSection() {
           initial={{ opacity: 0, x: 80, scale: 0.92 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           transition={{ duration: 1.1, delay: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative" }}
+          // FIX: Added padding bottom on mobile so it doesn't scrape the edge
+          style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", paddingBottom: isMobile ? "20px" : 0 }}
         >
-          {/* Background glow blobs */}
           <div style={{ position: "absolute", width: 340, height: 420, borderRadius: 32, background: "radial-gradient(ellipse, rgba(14,165,233,0.18) 0%, rgba(139,92,246,0.12) 50%, transparent 80%)", filter: "blur(50px)", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
 
-          {/* Floating animation wrapper */}
           <motion.div
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             style={{ position: "relative", zIndex: 10 }}
           >
-            {/* ── Outer glow border wrapper ── */}
             <div
               className="hero-portrait-frame"
               style={{
                 position: "relative",
-                width: isMobile ? 260 : 380,
-                height: isMobile ? 320 : 460,
+                width: isMobile ? 280 : 380, // Slightly bumped mobile width for better proportions
+                height: isMobile ? 340 : 460,
               }}
             >
-              {/* Thin gradient border */}
-              <div style={{
-                position: "absolute",
-                inset: -2,
-                borderRadius: 28,
-                background: "linear-gradient(160deg, #0ea5e9 0%, #8b5cf6 50%, #06b6d4 100%)",
-                backgroundSize: "200% 200%",
-                animation: "shimmer 5s linear infinite",
-                opacity: 0.8,
-                zIndex: 0,
-              }} />
+              <div style={{ position: "absolute", inset: -2, borderRadius: 28, background: "linear-gradient(160deg, #0ea5e9 0%, #8b5cf6 50%, #06b6d4 100%)", backgroundSize: "200% 200%", animation: "shimmer 5s linear infinite", opacity: 0.8, zIndex: 0 }} />
 
-              {/* Main image card */}
-              <div style={{
-                position: "absolute",
-                inset: 2,
-                borderRadius: 26,
-                overflow: "hidden",
-                background: "#050510",
-                zIndex: 1,
-              }}>
-                {/* Tech grid background behind photo */}
+              <div style={{ position: "absolute", inset: 2, borderRadius: 26, overflow: "hidden", background: "#050510", zIndex: 1 }}>
                 <div className="bg-grid" style={{ position: "absolute", inset: 0, opacity: 0.5, zIndex: 0 }} />
 
-                {/* Photo */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="/abhishek.png"
                   alt="Abhishek Kumar"
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    objectPosition: "center top",
-                    display: "block",
-                    zIndex: 1,
-                  }}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block", zIndex: 1 }}
                 />
 
-                {/* Gradient overlays for depth */}
-                <div style={{
-                  position: "absolute", inset: 0, zIndex: 2,
-                  background: "linear-gradient(to bottom, transparent 40%, rgba(5,5,20,0.75) 100%)",
-                  pointerEvents: "none",
-                }} />
+                <div style={{ position: "absolute", inset: 0, zIndex: 2, background: "linear-gradient(to bottom, transparent 40%, rgba(5,5,20,0.75) 100%)", pointerEvents: "none" }} />
+                <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 2, background: "linear-gradient(to bottom, transparent 10%, #0ea5e9 40%, #06b6d4 60%, transparent 90%)", zIndex: 3, opacity: 0.9 }} />
+                <div style={{ position: "absolute", top: 0, right: 0, bottom: 0, width: 2, background: "linear-gradient(to bottom, transparent 10%, #8b5cf6 40%, #a855f7 60%, transparent 90%)", zIndex: 3, opacity: 0.7 }} />
 
-                {/* Blue rim light on left edge */}
-                <div style={{
-                  position: "absolute", top: 0, left: 0, bottom: 0, width: 2,
-                  background: "linear-gradient(to bottom, transparent 10%, #0ea5e9 40%, #06b6d4 60%, transparent 90%)",
-                  zIndex: 3, opacity: 0.9,
-                }} />
-
-                {/* Purple rim light on right edge */}
-                <div style={{
-                  position: "absolute", top: 0, right: 0, bottom: 0, width: 2,
-                  background: "linear-gradient(to bottom, transparent 10%, #8b5cf6 40%, #a855f7 60%, transparent 90%)",
-                  zIndex: 3, opacity: 0.7,
-                }} />
-
-                {/* Bottom glass nameplate */}
-                <div style={{
-                  position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 4,
-                  padding: "14px 18px",
-                  background: "rgba(5,5,15,0.7)",
-                  backdropFilter: "blur(20px)",
-                  borderTop: "1px solid rgba(255,255,255,0.08)",
-                }}>
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 4, padding: "14px 18px", background: "rgba(5,5,15,0.7)", backdropFilter: "blur(20px)", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
                       <div style={{ fontSize: 15, fontWeight: 700, color: "white", fontFamily: "var(--font-space), sans-serif", marginBottom: 2 }}>Abhishek Kumar</div>
@@ -317,76 +278,32 @@ export default function HeroSection() {
                 </div>
               </div>
 
-              {/* Corner accent dots */}
               <div style={{ position: "absolute", top: -6, left: -6, width: 12, height: 12, borderRadius: "50%", background: "#0ea5e9", boxShadow: "0 0 12px #0ea5e9", zIndex: 5 }} />
               <div style={{ position: "absolute", top: -6, right: -6, width: 8, height: 8, borderRadius: "50%", background: "#8b5cf6", boxShadow: "0 0 10px #8b5cf6", zIndex: 5 }} />
               <div style={{ position: "absolute", bottom: -6, left: -6, width: 8, height: 8, borderRadius: "50%", background: "#06b6d4", boxShadow: "0 0 10px #06b6d4", zIndex: 5 }} />
               <div style={{ position: "absolute", bottom: -6, right: -6, width: 10, height: 10, borderRadius: "50%", background: "#8b5cf6", boxShadow: "0 0 10px #8b5cf6", zIndex: 5 }} />
             </div>
 
-            {/* Floating stat cards — desktop only */}
+            {/* Desktop only floating cards */}
             {!isMobile && (
               <>
-                {/* Top-left: AI card */}
-                <motion.div
-                  animate={{ y: [0, -7, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0 }}
-                  style={{
-                    position: "absolute", top: "6%", left: "-42%",
-                    background: "rgba(5,5,20,0.85)", backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(14,165,233,0.3)",
-                    borderRadius: 16, padding: "12px 16px",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(14,165,233,0.1)",
-                    minWidth: 148,
-                  }}>
+                {/* Omitted for brevity: These remain exactly the same as your original desktop code */}
+                <motion.div animate={{ y: [0, -7, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0 }} style={{ position: "absolute", top: "6%", left: "-42%", background: "rgba(5,5,20,0.85)", backdropFilter: "blur(20px)", border: "1px solid rgba(14,165,233,0.3)", borderRadius: 16, padding: "12px 16px", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(14,165,233,0.1)", minWidth: 148 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg, rgba(14,165,233,0.2), rgba(6,182,212,0.2))", border: "1px solid rgba(14,165,233,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>🤖</div>
-                    <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "white", fontFamily: "var(--font-space), sans-serif" }}>GPT-4 Expert</div>
-                      <div style={{ fontSize: 9, color: "rgba(14,165,233,0.8)", fontFamily: "var(--font-mono, monospace)", letterSpacing: "0.08em" }}>AI Developer</div>
-                    </div>
+                    <div><div style={{ fontSize: 11, fontWeight: 700, color: "white", fontFamily: "var(--font-space), sans-serif" }}>GPT-4 Expert</div><div style={{ fontSize: 9, color: "rgba(14,165,233,0.8)", fontFamily: "var(--font-mono, monospace)", letterSpacing: "0.08em" }}>AI Developer</div></div>
                   </div>
                 </motion.div>
-
-                {/* Right: Projects */}
-                <motion.div
-                  animate={{ y: [0, 8, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }}
-                  style={{
-                    position: "absolute", top: "28%", right: "-44%",
-                    background: "rgba(5,5,20,0.85)", backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(139,92,246,0.3)",
-                    borderRadius: 16, padding: "12px 16px",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.1)",
-                    minWidth: 148,
-                  }}>
+                <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.8 }} style={{ position: "absolute", top: "28%", right: "-44%", background: "rgba(5,5,20,0.85)", backdropFilter: "blur(20px)", border: "1px solid rgba(139,92,246,0.3)", borderRadius: 16, padding: "12px 16px", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.1)", minWidth: 148 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg, rgba(139,92,246,0.2), rgba(168,85,247,0.2))", border: "1px solid rgba(139,92,246,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>⚡</div>
-                    <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "white", fontFamily: "var(--font-space), sans-serif" }}>50+ Projects</div>
-                      <div style={{ fontSize: 9, color: "rgba(139,92,246,0.8)", fontFamily: "var(--font-mono, monospace)", letterSpacing: "0.08em" }}>Delivered</div>
-                    </div>
+                    <div><div style={{ fontSize: 11, fontWeight: 700, color: "white", fontFamily: "var(--font-space), sans-serif" }}>50+ Projects</div><div style={{ fontSize: 9, color: "rgba(139,92,246,0.8)", fontFamily: "var(--font-mono, monospace)", letterSpacing: "0.08em" }}>Delivered</div></div>
                   </div>
                 </motion.div>
-
-                {/* Bottom-left: Revenue */}
-                <motion.div
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-                  style={{
-                    position: "absolute", bottom: "12%", left: "-42%",
-                    background: "rgba(5,5,20,0.85)", backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(6,182,212,0.3)",
-                    borderRadius: 16, padding: "12px 16px",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(6,182,212,0.1)",
-                    minWidth: 148,
-                  }}>
+                <motion.div animate={{ y: [0, -5, 0] }} transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 1.5 }} style={{ position: "absolute", bottom: "12%", left: "-42%", background: "rgba(5,5,20,0.85)", backdropFilter: "blur(20px)", border: "1px solid rgba(6,182,212,0.3)", borderRadius: 16, padding: "12px 16px", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(6,182,212,0.1)", minWidth: 148 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg, rgba(6,182,212,0.2), rgba(34,197,94,0.15))", border: "1px solid rgba(6,182,212,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>📈</div>
-                    <div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: "white", fontFamily: "var(--font-space), sans-serif" }}>$500K+ Rev</div>
-                      <div style={{ fontSize: 9, color: "rgba(6,182,212,0.8)", fontFamily: "var(--font-mono, monospace)", letterSpacing: "0.08em" }}>Generated</div>
-                    </div>
+                    <div><div style={{ fontSize: 11, fontWeight: 700, color: "white", fontFamily: "var(--font-space), sans-serif" }}>$500K+ Rev</div><div style={{ fontSize: 9, color: "rgba(6,182,212,0.8)", fontFamily: "var(--font-mono, monospace)", letterSpacing: "0.08em" }}>Generated</div></div>
                   </div>
                 </motion.div>
               </>
@@ -394,14 +311,15 @@ export default function HeroSection() {
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}
-        style={{ position: "absolute", bottom: 24, left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, zIndex: 10 }}>
-        <div style={{ width: 1, height: 44, background: "linear-gradient(to bottom, rgba(14,165,233,0.8), transparent)", animation: "float-slow 2s ease-in-out infinite" }} />
-        <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-mono, monospace)", textTransform: "uppercase" }}>Scroll</span>
-      </motion.div>
+      
+      {/* Scroll indicator hidden on mobile to avoid overlap, visible on desktop */}
+      {!isMobile && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}
+          style={{ position: "absolute", bottom: 24, left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, zIndex: 10 }}>
+          <div style={{ width: 1, height: 44, background: "linear-gradient(to bottom, rgba(14,165,233,0.8), transparent)", animation: "float-slow 2s ease-in-out infinite" }} />
+          <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-mono, monospace)", textTransform: "uppercase" }}>Scroll</span>
+        </motion.div>
+      )}
     </section>
   );
 }
-
