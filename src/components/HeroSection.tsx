@@ -26,7 +26,7 @@ export default function HeroSection() {
     if (!canvas || !canvas.parentElement) return;
     const ctx = canvas.getContext("2d")!;
     
-    // FIX: Use parent element dimensions so the canvas covers the whole scrollable area on mobile
+    // Canvas covers the ENTIRE scrollable height
     let w = (canvas.width = canvas.parentElement.offsetWidth);
     let h = (canvas.height = canvas.parentElement.offsetHeight);
     
@@ -36,6 +36,7 @@ export default function HeroSection() {
       h = canvas.height = canvas.parentElement.offsetHeight;
     };
     window.addEventListener("resize", onResize);
+    setTimeout(onResize, 500); // Re-calculate after load
 
     type P = { x: number; y: number; vx: number; vy: number; r: number; color: string; opacity: number };
     const cols = ["#0ea5e9", "#8b5cf6", "#06b6d4", "#ffffff"];
@@ -115,7 +116,6 @@ export default function HeroSection() {
   }, [roleIdx, typing]);
 
   return (
-    // FIX: Changed overflow: "hidden" to overflowX: "hidden" to allow mobile vertical scrolling
     <section id="hero" style={{ minHeight: "100vh", width: "100%", position: "relative", overflowX: "hidden", display: "flex", alignItems: "center" }}>
       <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
       <div className="bg-grid" style={{ position: "absolute", inset: 0, opacity: 0.4 }} />
@@ -128,16 +128,16 @@ export default function HeroSection() {
           maxWidth: 1280,
           width: "100%",
           margin: "0 auto",
-          // FIX: Adjusted padding for better breathing room on mobile
-          padding: isMobile ? "60px 1.25rem 100px" : "110px 2.5rem 70px",
+          // Mobile pe padding hatayi taki height properly 100vh calculate ho sake
+          padding: isMobile ? "0 1.25rem" : "110px 2.5rem 70px",
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-          gap: isMobile ? "40px" : "60px",
+          gap: isMobile ? "0px" : "60px", 
           alignItems: "center",
           textAlign: isMobile ? "center" : "left",
         }}
       >
-        {/* LEFT: Text */}
+        {/* LEFT: Text Content - TAKES FULL 100vh ON MOBILE */}
         <div
           className="hero-left"
           style={{ 
@@ -145,9 +145,11 @@ export default function HeroSection() {
             flexDirection: "column", 
             gap: 22, 
             alignItems: isMobile ? "center" : "flex-start",
-            // FIX: Forces the text to take up the first screen view on mobile, pushing image down
-            minHeight: isMobile ? "85vh" : "auto", 
-            justifyContent: "center" 
+            justifyContent: "center",
+            minHeight: isMobile ? "100svh" : "auto", // Ye line make sure karegi ki first view mein sirf text aaye
+            paddingTop: isMobile ? "60px" : 0, 
+            paddingBottom: isMobile ? "40px" : 0,
+            position: "relative"
           }}
         >
           {/* Badge */}
@@ -222,16 +224,31 @@ export default function HeroSection() {
               </div>
             ))}
           </motion.div>
+
+          {/* Mobile Scroll Indicator - Hints to scroll down for the image */}
+          {isMobile && (
+             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}
+              style={{ position: "absolute", bottom: 20, left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+              <span style={{ fontSize: 9, letterSpacing: "0.35em", color: "rgba(255,255,255,0.25)", fontFamily: "var(--font-mono, monospace)", textTransform: "uppercase" }}>Scroll</span>
+              <div style={{ width: 1, height: 30, background: "linear-gradient(to bottom, rgba(14,165,233,0.8), transparent)", animation: "float-slow 2s ease-in-out infinite" }} />
+             </motion.div>
+          )}
         </div>
 
-        {/* RIGHT: Professional Portrait */}
+        {/* RIGHT: Professional Portrait - APPEARS ONLY AFTER SCROLLING ON MOBILE */}
         <motion.div
           className="hero-right"
           initial={{ opacity: 0, x: 80, scale: 0.92 }}
           animate={{ opacity: 1, x: 0, scale: 1 }}
           transition={{ duration: 1.1, delay: 0.4, ease: [0.23, 1, 0.32, 1] }}
-          // FIX: Added padding bottom on mobile so it doesn't scrape the edge
-          style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "relative", paddingBottom: isMobile ? "20px" : 0 }}
+          style={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            alignItems: "center", 
+            position: "relative",
+            minHeight: isMobile ? "90vh" : "auto", // Image section gets its own view height
+            paddingBottom: isMobile ? "60px" : 0
+          }}
         >
           <div style={{ position: "absolute", width: 340, height: 420, borderRadius: 32, background: "radial-gradient(ellipse, rgba(14,165,233,0.18) 0%, rgba(139,92,246,0.12) 50%, transparent 80%)", filter: "blur(50px)", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
 
@@ -244,8 +261,8 @@ export default function HeroSection() {
               className="hero-portrait-frame"
               style={{
                 position: "relative",
-                width: isMobile ? 280 : 380, // Slightly bumped mobile width for better proportions
-                height: isMobile ? 340 : 460,
+                width: isMobile ? 300 : 380,
+                height: isMobile ? 380 : 460,
               }}
             >
               <div style={{ position: "absolute", inset: -2, borderRadius: 28, background: "linear-gradient(160deg, #0ea5e9 0%, #8b5cf6 50%, #06b6d4 100%)", backgroundSize: "200% 200%", animation: "shimmer 5s linear infinite", opacity: 0.8, zIndex: 0 }} />
@@ -287,7 +304,6 @@ export default function HeroSection() {
             {/* Desktop only floating cards */}
             {!isMobile && (
               <>
-                {/* Omitted for brevity: These remain exactly the same as your original desktop code */}
                 <motion.div animate={{ y: [0, -7, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0 }} style={{ position: "absolute", top: "6%", left: "-42%", background: "rgba(5,5,20,0.85)", backdropFilter: "blur(20px)", border: "1px solid rgba(14,165,233,0.3)", borderRadius: 16, padding: "12px 16px", boxShadow: "0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(14,165,233,0.1)", minWidth: 148 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div style={{ width: 34, height: 34, borderRadius: 10, background: "linear-gradient(135deg, rgba(14,165,233,0.2), rgba(6,182,212,0.2))", border: "1px solid rgba(14,165,233,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>🤖</div>
@@ -312,7 +328,7 @@ export default function HeroSection() {
         </motion.div>
       </div>
       
-      {/* Scroll indicator hidden on mobile to avoid overlap, visible on desktop */}
+      {/* Scroll indicator for desktop */}
       {!isMobile && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}
           style={{ position: "absolute", bottom: 24, left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: 6, zIndex: 10 }}>
