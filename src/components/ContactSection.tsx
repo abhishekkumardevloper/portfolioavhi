@@ -80,10 +80,10 @@ export default function ContactSection() {
   };
 
   const contactLinks = [
-    { icon: "📧", label: "Email", value: "abhishek@example.com", href: "mailto:abhishek@example.com", color: "#0ea5e9" },
-    { icon: "💬", label: "WhatsApp", value: "+91 98765 43210", href: "https://wa.me/919876543210", color: "#22c55e" },
-    { icon: "💼", label: "LinkedIn", value: "linkedin.com/in/abhishek", href: "https://linkedin.com", color: "#0ea5e9" },
-    { icon: "🐙", label: "GitHub", value: "github.com/abhishek", href: "https://github.com", color: "#8b5cf6" },
+    { icon: "📧", label: "Email", value: "abhishekkumar.devloper@gmail.com", href: "mailto:abhishekkumar.devloper@gmail.com", color: "#0ea5e9" },
+    { icon: "💬", label: "WhatsApp", value: "+91 99050 28510", href: "https://wa.me/919905028510", color: "#22c55e" },
+    { icon: "💼", label: "LinkedIn", value: "linkedin.com/in/abhishek", href: "www.linkedin.com/in/abhishek-kumar-b5a180343", color: "#0ea5e9" },
+    { icon: "🐙", label: "GitHub", value: "github.com/abhishekkumar.devloper", href: "https://github.com/abhishekkumardevloper", color: "#8b5cf6" },
   ];
 
   return (
