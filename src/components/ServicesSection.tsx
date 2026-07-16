@@ -138,7 +138,7 @@ export default function ServicesSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}
+            style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.9)", backdropFilter: "blur(8px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}
             onClick={() => setIsModalOpen(false)}
           >
             <motion.div
@@ -146,7 +146,8 @@ export default function ServicesSection() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              style={{ width: "100%", maxWidth: "1280px", height: "90vh", backgroundColor: "#09090b", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
+              // Widened to 1536px to guarantee desktop layout is triggered, and height mapped to 95vh for full view
+              style={{ width: "100%", maxWidth: "1536px", height: "95vh", backgroundColor: "#09090b", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.1)", display: "flex", flexDirection: "column", overflow: "hidden", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
             >
               {/* Modal Header */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px", borderBottom: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#111113" }}>
@@ -182,7 +183,7 @@ export default function ServicesSection() {
                 ))}
               </div>
 
-              {/* Sub-categories (Specific Websites) */}
+              {/* Sub-categories */}
               <div style={{ display: "flex", gap: "8px", padding: "12px 24px", overflowX: "auto", borderBottom: "1px solid rgba(255,255,255,0.05)", backgroundColor: "#050505" }}>
                 {portfolioData[activeCategory].map((site) => (
                   <button
@@ -205,25 +206,14 @@ export default function ServicesSection() {
                 ))}
               </div>
 
-              {/* Iframe View - Strictly Enforced 16:9 Laptop Ratio */}
-              <div style={{ flex: 1, backgroundColor: "#111113", padding: "24px", overflowY: "auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <div style={{ 
-                  width: "100%", 
-                  aspectRatio: "16/9", 
-                  backgroundColor: "#ffffff", 
-                  borderRadius: "12px", 
-                  overflow: "hidden", 
-                  border: "6px solid #2a2a2d", /* Creates a sleek laptop screen bezel effect */
-                  boxShadow: "0 20px 40px rgba(0,0,0,0.8)",
-                  position: "relative" 
-                }}>
-                  <iframe 
-                    src={activeSite} 
-                    style={{ width: "100%", height: "100%", border: "none", position: "absolute", top: 0, left: 0 }}
-                    title="Project Preview"
-                    loading="lazy"
-                  />
-                </div>
+              {/* Iframe View - Allowed to fill 100% of remaining vertical/horizontal space naturally */}
+              <div style={{ flex: 1, backgroundColor: "#ffffff", position: "relative", overflow: "hidden" }}>
+                <iframe 
+                  src={activeSite} 
+                  style={{ width: "100%", height: "100%", border: "none", display: "block", position: "absolute", top: 0, left: 0 }}
+                  title="Project Preview"
+                  loading="lazy"
+                />
               </div>
             </motion.div>
           </motion.div>
