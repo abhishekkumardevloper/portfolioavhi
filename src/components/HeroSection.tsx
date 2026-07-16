@@ -219,7 +219,7 @@ export default function HeroSection() {
               onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "0 4px 24px rgba(99,102,241,0.3)"; }}>
               🚀 Explore My Work
             </button>
-            <a href="https://calendly.com" target="_blank" rel="noopener noreferrer"
+            <a href="https://api.whatsapp.com/send/?phone=919905028510&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer"
               style={{ width: isMobile ? "100%" : "auto", padding: "15px 28px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 50, color: "rgba(255,255,255,0.9)", fontSize: 15, fontWeight: 600, cursor: "pointer", transition: "all 0.3s ease", fontFamily: "var(--font-space), sans-serif", textDecoration: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, backdropFilter: "blur(10px)" }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(139,92,246,0.5)"; e.currentTarget.style.background = "rgba(255,255,255,0.08)"; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.background = "rgba(255,255,255,0.03)"; }}>
