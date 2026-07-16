@@ -99,8 +99,16 @@ export default function ProjectsSection() {
 
                     {/* CTA row */}
                     <div style={{ display: "flex", gap: 12 }}>
-                      <button style={{ flex: 1, padding: "10px", borderRadius: 10, background: `rgba(${hexToRgb(project.color)}, 0.15)`, border: `1px solid ${project.color}30`, color: project.color, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s ease" }}>Live Demo →</button>
-                      <button style={{ padding: "10px 16px", borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)", fontSize: 13, cursor: "pointer", transition: "all 0.2s ease" }}>GitHub</button>
+                      <button 
+                        onClick={() => window.open("https://wa.me/919905028510", "_blank")}
+                        style={{ flex: 1, padding: "10px", borderRadius: 10, background: `rgba(${hexToRgb(project.color)}, 0.15)`, border: `1px solid ${project.color}30`, color: project.color, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s ease" }}>
+                        Get Started →
+                      </button>
+                      <button 
+                        onClick={() => window.open("https://github.com/abhishekkumardevloper", "_blank")}
+                        style={{ padding: "10px 16px", borderRadius: 10, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)", fontSize: 13, cursor: "pointer", transition: "all 0.2s ease" }}>
+                        GitHub
+                      </button>
                     </div>
                   </div>
                 </div>
